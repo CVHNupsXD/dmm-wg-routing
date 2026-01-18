@@ -1,0 +1,29 @@
+# DMM Game Player
+pics.dmm.com
+support.dmm.com
+media.games.dmm.com
+gw.dmmapis.com
+evo.dmmapis.com
+p.dmm.co.jp
+trac.i3.dmm.com
+accounts.dmm.com
+sample9.dmm.com
+dmm-extension.com
+wsdgp.games.dmm.com
+api-gameplayer.dmm.com
+api-wsdgp.games.dmm.com
+apidgp-gameplayer.games.dmm.com
+dlapp-dmmgameplayer.games.dmm.com
+webdgp-gameplayer.games.dmm.com
+cdn2-gameplayer.games.dmm.com
+
+# Princess Connect Re:Dive
+api-priconne-redive.cygames.jp
+priconne-redive.akamaized.net
+prd-priconne-redive.akamaized.net
+
+# Umamusume JP
+dmg.umamusume.jp
+api-umamusume.cygames.jp
+prd-info-umamusume.akamaized.net
+prd-storage-app-umamusume.akamaized.net
