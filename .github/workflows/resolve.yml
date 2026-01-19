@@ -1,7 +1,7 @@
 name: Resolve Domains via JP DoH
 
 on:
-  schedule
+  schedule:
     - cron: '0 */12 * * *'
   workflow_dispatch:
 
