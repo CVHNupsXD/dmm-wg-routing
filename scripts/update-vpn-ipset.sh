@@ -12,12 +12,13 @@ else
     exit 1
 fi
 
-echo "Updating vpn_domains ipset..."
+IPSET_TIMEOUT=$((${RESOLVE_INTERVAL:-43200} + 900))
+echo "Updating vpn_domains ipset (timeout: ${IPSET_TIMEOUT}s)..."
 count=0
 while IFS='=' read -r domain ip; do
     ip=$(echo "$ip" | tr -d '[:space:]')
     if [[ -n "$ip" ]] && [[ "$ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        ipset add vpn_domains "$ip" timeout 3600 -exist
+        ipset add vpn_domains "$ip" timeout $IPSET_TIMEOUT -exist
         ((count++)) || true
     fi
 done < "$TEMP_FILE"

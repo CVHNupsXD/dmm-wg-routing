@@ -14,8 +14,9 @@ for iface in /proc/sys/net/ipv4/conf/*; do
 done
 
 echo "Creating ipset sets..."
-ipset create vpn_domains hash:ip timeout 3600 -exist
-ipset create vpn_domains hash:ip timeout 3600 -exist
+IPSET_TIMEOUT=$((${RESOLVE_INTERVAL:-43200} + 900))
+echo "Using ipset timeout: ${IPSET_TIMEOUT}s"
+ipset create vpn_domains hash:ip timeout $IPSET_TIMEOUT -exist
 
 if [[ -f "$WG_CONFIG" ]]; then
     echo "Starting WireGuard..."
@@ -36,22 +37,28 @@ if [[ -f "$WG_CONFIG" ]]; then
     
     echo "WireGuard interface up (MTU 1280)"
     wg show wg0
+    
+    WG_TABLE_OFF=false
+    if grep -qiE '^\s*Table\s*=\s*off' "$WG_CONFIG"; then
+        WG_TABLE_OFF=true
+        echo "WireGuard config has 'Table = off', skipping policy routing setup"
+    fi
+    
+    if [[ "$WG_TABLE_OFF" == "false" ]]; then
+        echo "Setting up policy routing (Table 100)..."
+        
+        ip route del default dev wg0 table 100 2>/dev/null || true
+        ip rule del fwmark 0x1 table 100 2>/dev/null || true
+        
+        ip route add default dev wg0 table 100
+        ip rule add fwmark 0x1 table 100 priority 100
+        
+        while ip rule del table 51820 2>/dev/null; do :; done
+        while ip rule del from all lookup main suppress_prefixlength 0 2>/dev/null; do :; done
+    fi
 else
     echo "WARNING: WireGuard config not found at $WG_CONFIG"
 fi
-
-echo "Setting up policy routing (Table 100)..."
-ip route del default dev wg0 table 100 2>/dev/null || true
-ip rule del fwmark 0x1 table 100 2>/dev/null || true
-
-ip route add default dev wg0 table 100
-ip rule add fwmark 0x1 table 100 priority 100
-
-while ip rule del table 51820 2>/dev/null; do :; done
-while ip rule del from all lookup main suppress_prefixlength 0 2>/dev/null; do :; done
-
-ip route add default dev wg0 table 100 2>/dev/null || true
-ip rule add fwmark 0x1 table 100 2>/dev/null || 
 
 echo "Starting zapret..."
 pkill -f nfqws 2>/dev/null || true
@@ -89,16 +96,6 @@ else
 fi
 
 sleep 7
-
-# Why u have to do this tailscale ?
-WAN_IFACE=$(ip route | grep default | awk '{print $5}' | head -1)
-LOCAL_NET=$(ip -o -f inet addr show "$WAN_IFACE" | awk '{print $4}')
-
-if [[ -n "$LOCAL_NET" ]] && [[ -n "$WAN_IFACE" ]]; then
-    echo "Adding rule to bypass Tailscale for local network $LOCAL_NET"
-    ip rule del to "$LOCAL_NET" table main priority 50 2>/dev/null || true
-    ip rule add to "$LOCAL_NET" table main priority 50
-fi
 
 echo "Configuring iptables..."
 /scripts/setup-iptables.sh

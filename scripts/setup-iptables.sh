@@ -99,6 +99,13 @@ iptables -t nat -A GATEWAY_POSTROUTE \
 
 iptables -t mangle -A GATEWAY_OUTPUT -p tcp --tcp-flags SYN,RST SYN -m mark --mark 0x1 -j TCPMSS --set-mss 1240
 
+# Tailscale local network bypass
+if [[ -n "$LOCAL_NET" ]] && [[ -n "$WAN_IFACE" ]]; then
+    echo "Adding rule to bypass Tailscale for local network $LOCAL_NET"
+    ip rule del to "$LOCAL_NET" table main priority 50 2>/dev/null || true
+    ip rule add to "$LOCAL_NET" table main priority 50
+fi
+
 echo "iptables rules configured"
 echo ""
 echo "=== LOCAL NETWORK PRESERVATION ==="
