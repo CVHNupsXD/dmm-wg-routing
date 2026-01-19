@@ -1,14 +1,17 @@
 # DMM Game Player
+dmm.com
+www.dmm.com
+accounts.dmm.com
+i3.dmm.com
+stat.i3.dmm.com
+trac.i3.dmm.com
+p.dmm.co.jp
+dmm-extension.com
+gw.dmmapis.com
+evo.dmmapis.com
 pics.dmm.com
 support.dmm.com
 media.games.dmm.com
-gw.dmmapis.com
-evo.dmmapis.com
-p.dmm.co.jp
-trac.i3.dmm.com
-accounts.dmm.com
-sample9.dmm.com
-dmm-extension.com
 wsdgp.games.dmm.com
 api-gameplayer.dmm.com
 api-wsdgp.games.dmm.com
